@@ -2,7 +2,8 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const userModel = require("./models/user");
-
+const {dbConnection} = require('./models/user');
+dbConnection();
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -14,7 +15,7 @@ app.get("/", function (req, res) {
 
 app.get("/read", async (req, res) => {
     let users = await userModel.find();
-    console.log(users);
+    // console.log(users);
     res.render("read", { users });
 });
 app.get("/edit/:userid", async (req, res) => {
@@ -45,4 +46,9 @@ app.post("/create", async (req, res) => {
     res.redirect("/read");
 });
 
-app.listen(3000);
+const PORT = 3000 || process.env.PORT
+app.listen(PORT, () => {
+    console.log(`Server connected to port ${PORT}`);
+}).on("error", (err) => {
+    console.log("Error starting the server:", err);
+});
